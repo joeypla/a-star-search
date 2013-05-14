@@ -56,7 +56,7 @@ public class AStarImplementation extends JFrame implements KeyListener{
         nodes[3][2].filled = true;
         nodes[4][3].filled = true;
         nodes[4][2].filled = true;
-        //nodes[6][6].goalNode = true;
+        
         performSearch(startNode, endNode);
         repaint();
     }
