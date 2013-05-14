@@ -3,6 +3,7 @@ import java.awt.Graphics;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.awt.event.*;
+//simple and probably poorly implemented A*
 public class AStarImplementation extends JFrame implements KeyListener{
     public static final int WORLDX = 640;
     public static final int WORLDY = 640;
