@@ -58,7 +58,7 @@ class AStarImplementation extends JFrame implements KeyListener{
         nodes[4][3].filled = true;
         nodes[4][2].filled = true;
 
-        performSearch(startNode, endNode);
+        performSearch(startNode, endNode, true);
         repaint();
     }
 
@@ -122,10 +122,13 @@ class AStarImplementation extends JFrame implements KeyListener{
         g.drawRect(selectionNode.x*nodeSpanX, selectionNode.y*nodeSpanY, nodeSpanX, nodeSpanY);
     }
 
-    public void performSearch(Node startNode, Node endNode){
-        ScopedTimer timer = new ScopedTimer();
+    public void performSearch(Node startNode, Node endNode, boolean zeroHeuristic){
+        initNodes(zeroHeuristic);
 
-        initNodes();
+        String timerName = zeroHeuristic ? "PerformSearch-ZeroHeuristic" : "PerformSearch-Optimized";
+        ScopedTimer timer = new ScopedTimer(timerName);
+
+
 
         openList.add(startNode);
 
@@ -151,15 +154,22 @@ class AStarImplementation extends JFrame implements KeyListener{
     }
 
     /* Go through all nodes and set h cost (absolute distance cost to goal). */
-    private void initNodes()
+    private void initNodes(boolean zeroHeuristic)
     {
+        ScopedTimer timer = new ScopedTimer("InitNodes");
         for (int x = 0; x < GRIDX; x++){
             for (int y = 0; y < GRIDY; y++){
-                nodes[x][y].setHeuristic(endNode.x, endNode.y);
+                if (zeroHeuristic) {
+                    nodes[x][y].h = 0;
+                } else {
+                    nodes[x][y].setHeuristic(endNode.x, endNode.y);
+                }
+
                 nodes[x][y].g = 0;
                 nodes[x][y].calculateF();
             }
         }
+        timer.finish();
     }
 
     public void checkNode(Node currentNode, int offsetX, int offsetY){
@@ -235,7 +245,10 @@ class AStarImplementation extends JFrame implements KeyListener{
             selectionNode.filled = !selectionNode.filled;
         }
         if (e.getKeyCode() == KeyEvent.VK_C){
-            performSearch(startNode, endNode);
+            performSearch(startNode, endNode, false);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_V){
+            performSearch(startNode, endNode, true);
         }
         if (e.getKeyCode() == KeyEvent.VK_T){
             drawNodeInfo = !drawNodeInfo;
@@ -313,8 +326,10 @@ class AStarImplementation extends JFrame implements KeyListener{
     class ScopedTimer
     {
         long startTime;
-        ScopedTimer()
+        String name;
+        ScopedTimer(String name)
         {
+            this.name = name;
             startTime = System.nanoTime();
         }
 
@@ -323,7 +338,7 @@ class AStarImplementation extends JFrame implements KeyListener{
             long endTime = System.nanoTime();
             long elapsedTime = endTime - startTime;
             double millis = elapsedTime / 1000000.0;
-            System.out.println("Timer time elapsed: " + millis);
+            System.out.println("Timer - " + name + ": " + millis);
         }
     }
 }
